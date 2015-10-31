@@ -1,3 +1,7 @@
+URL Friendly encryption/decryption by both Javascript and PHP (Same results)
+Ideal for: Client side encryption and server side decryption or vice versa
+
+Based on:
 CryptoJS 3.x AES encryption/decryption on client side with Javascript and on server side with PHP
 ================
 
