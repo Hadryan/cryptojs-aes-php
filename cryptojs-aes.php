@@ -20,7 +20,7 @@ function cryptoJsAesDecrypt($passphrase, $jsonString){
         $salt = hex2bin($jsondata["s"]);
         $iv  = hex2bin($jsondata["iv"]);
     } catch(Exception $e) { return null; }
-    $ct = base64_decode($jsondata["ct"]);
+    $ct = safe_b64decode($jsondata["ct"]);
     $concatedPassphrase = $passphrase.$salt;
     $md5 = array();
     $md5[0] = md5($concatedPassphrase, true);
@@ -52,6 +52,21 @@ function cryptoJsAesEncrypt($passphrase, $value){
     $key = substr($salted, 0, 32);
     $iv  = substr($salted, 32,16);
     $encrypted_data = openssl_encrypt(json_encode($value), 'aes-256-cbc', $key, true, $iv);
-    $data = array("ct" => base64_encode($encrypted_data), "iv" => bin2hex($iv), "s" => bin2hex($salt));
+    $data = array("ct" => safe_b64encode($encrypted_data), "iv" => bin2hex($iv), "s" => bin2hex($salt));
     return json_encode($data);
+}
+
+function safe_b64encode($string) {
+	$data = base64_encode($string);
+	$data = str_replace(array('+','/','='),array('-','_','.'),$data);
+	return $data;
+}
+
+function safe_b64decode($string) {
+	$data = str_replace(array('-','_','.'),array('+','/','='),$string);
+	$mod4 = strlen($data) % 4;
+	if ($mod4) {
+			$data .= substr('====', $mod4);
+	}
+	return base64_decode($data);
 }
